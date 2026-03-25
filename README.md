@@ -1,6 +1,6 @@
 # Ecological factors influencing male precociality in Chinook salmon parr
 
-<p align="center"><img src="pictures/precocious_parr.JPG" alt="Photograph of a wild precocious male parr Chinook salmon. Photo credit: B. Sandford." width = "400">
+<p align="center"><img src="pictures/precocious_parr_02.jpeg" alt="Photograph of a wild precocious male parr Chinook salmon. Photo credit: L. Stearman." width = "400">
   
 <p align="center">Photograph of a wild precocious male Chinook salmon parr. Photo credit: B. Sandford.
 
