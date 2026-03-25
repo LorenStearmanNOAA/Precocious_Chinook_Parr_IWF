@@ -18,7 +18,7 @@ Jesse J Lamb
 
 
 ## Dataset(s)
-All production datasets are currently in assembly. This repository currently holds data assembly scripts. Data listed below are planned for analyses. 
+All production datasets are currently in draft form. Assembly code and draft data are available on this repository. Other data listed below are planned for future analyses. 
 
 #### Idaho Wild Fish Juvenile Chinook Salmon PIT-Tagging Data
 - Access: Draft assembled data available in this repository. Raw unassembled data currently available on request from the authors
