@@ -21,7 +21,7 @@ Jesse J Lamb
 All production datasets are currently in assembly. This repository currently holds data assembly scripts. Data listed below are planned for analyses. 
 
 #### Idaho Wild Fish Juvenile Chinook Salmon PIT-Tagging Data
-- Access: Currently on request from the authors
+- Access: Draft assembled data available in this repository. Raw unassembled data currently available on request from the authors
 - Abundance, length, mass, and precocial status data for all Chinook salmon parr, 2001 - 2025
 
 #### PIT Tag Information System (PTAGIS)
