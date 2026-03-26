@@ -50,6 +50,11 @@ All production datasets are currently in draft form. Assembly code and draft dat
 - Variables used: adult counts for Spring/Summer Chinook Salmon, 2000 - 2025
 
 
+## Management/Mission Implications
+- Develops a better understanding of early life history diversity which may impact population resiliency or population growth rates
+- Provides data from wild populations to better understand precocial male development in more controlled hatchery settings
+
+
 ## Publications
 N/A
 
@@ -58,3 +63,5 @@ N/A
 - Shares use of Idaho Wild Fish Juvenile Chinook Salmon PIT-Tagging dataset
 - Data available via Zenodo at: [https://doi.org/10.5281/zenodo.17203877](https://doi.org/10.5281/zenodo.17203877)
 - GitHub repo currently under construction
+
+
