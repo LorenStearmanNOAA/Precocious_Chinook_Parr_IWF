@@ -1,0 +1,296 @@
+
+## Analysis of model variable distributions
+
+
+``` {r, echo = FALSE, message = FALSE, warning = FALSE}
+# Libraries
+    library(rmarkdown)
+    library(car)
+    library(viridis)
+```
+
+#### Let's get going: what is a variable's distribution?
+
+The distribution of a variable shows the pattern or shape describing the range of values the variable can take, and how common the measured values are at any point along that range. You are probably already quite familiar with the normal distribution (aka the "bell curve" shape, or a Gaussian distribution). Here's an example:
+
+``` {r, fig.width = 5, fig.height = 4, fig.align = "center", echo = FALSE}
+
+# Sets margin parameters
+    par(mar = c(4.5, 6, 1, 1))
+
+# Stores x and y values
+    x <- seq(-4, 4, by = 0.01)
+    y <- dnorm(x, 0, 1)
+    
+# Plots the result
+    plot(x, y, type = "l", lwd = 2, xlab = "The values that variable x can take",
+        ylab = "The frequency with which\nvariable x takes those values", cex.lab = 1.15)
+```
+
+\
+
+In this case, measurements of variable *x* suggest that values are most likely around zero. For a normal distribution, this is also the mean, median, and mode. The normal distribution has certain properties regarding the other **moments** of the distribution - its spread (dispersion), asymmetry (skew), and peakiness (kurtosis). 
+
+\
+
+There are lots of other described distributions out there with different patterns of dispersion, skew, and kurtosis. Distributions have a fundamental equation describing both their **cumulative frequency distribution** and their **probability density function**. The graph above is an example of a probability density function. It tells us the probabilty that we would sample a particular value of the variable *x*. The normal distribution has the following functions:
+
+\
+
+##### Cumulative distribution function
+##### Probability density function
+
+\
+
+
+The normal distribution is really important in statistics. From the **central limit theorem**, we expect most things we measure to have values close to a true mean, and to vary, on average, a certain amount from that mean. Put another way, many phenomena that we can measure will follow a normal distribution. 
+
+But this isn't true of all phenomena! A great example is the abundance of a species in the landscape. These patterns often follow a **log-normal** distribution. The simplest way to think of this is that a log-normal distribution is normally distributed when the values are log-transformed, but heavily right-skewed when untransformed. The abundance of different age classes is another good example. The distribution of stream sizes within a given watershed often approximates a log-normal distribution as well. Another one to be aware of is length and mass values. These often don't truly follow a log-normal distribution, but may be closer to a **power distribution**. These two variables often benefit from being compared on log-scales *together*, where they become approximately linear. We'll look at an example below.
+
+
+### Let's take a look at variables with and without normal distribution
+
+The following R code creates three response variables (*y1*, *y2*, and *y3*) with particular relationships to a predictor variable (*x1*). Both *y1* and *y2* have approximately linear relationships with *x1*; however, *y3* has a power (logarithmic) relationship, and is not too far from a log-normal distribution. 
+    
+``` {r, fig.width = 10, fig.height = 3.5, fig.align = "center", message = FALSE}
+    
+# Stores x and y variables
+# x1 is normally distributed, with mean = 20 and sd = 4
+    x1 <- rnorm(1000, 20, 4)
+
+# y1 is also normally distributed, with a small normal jitter applied
+    y1 <- x1 + rnorm(100, 0, 0.5)
+    
+# y2 is also normally distributed, but with a more severe jitter applied
+    y2 <- x1 + rnorm(100, 0, 2.5)
+    
+# y3 is log-normally distributed, with a small log-normal jitter applied
+    y3 <- (0.000001 * (x1^rnorm(100, 5, 0.075)))
+    
+# Creates a model data frame
+    mod_df <- data.frame(x1, y1, y2, y3)
+
+# Stores kernel density estimates for each variable. You can think of these as
+# a "smoothed" probability density function custom for each variable. 
+    kde_1 <- density(y1)
+    kde_2 <- density(y2)
+    kde_3 <- density(y3)
+    
+# Stores idealized normal and lognormal distributions based on data values
+    y1_norm_x <- seq(min(y1), max(y1), by = 0.1)
+    y1_distr <- cbind(x = y1_norm_x, norm = dnorm(y1_norm_x, mean(y1), sd(y1)),
+        lognorm = dlnorm(y1_norm_x, mean(log(y1)), sd(log(y1))))
+    y2_norm_x <- seq(min(y2), max(y2), by = 0.1)
+    y2_distr <- cbind(x = y2_norm_x, norm = dnorm(y2_norm_x, mean(y2), sd(y2)),
+        lognorm = dlnorm(y2_norm_x, mean(log(y2)), sd(log(y2))))
+    y3_norm_x <- seq(min(y3), max(y3), by = 0.1)
+    y3_distr <- cbind(x = y3_norm_x, norm = dnorm(y3_norm_x, mean(y3), sd(y3)),
+        lognorm = dlnorm(y3_norm_x, mean(log(y3)), sd(log(y3))))
+    
+    
+# Sets some framing parameters
+    par(mfrow = c(1, 3))
+    par(mar = c(4.5, 4.5, 1, 1))
+    
+# Plots a histogram of the distributions of each variable with density
+# lines and normal / lognormal distributions
+    
+# Histogram of y1
+    hist(y1, breaks = 50, main = "", freq = FALSE, cex.lab = 1.3)
+    
+# Density lines of y1
+    lines(kde_1, lty = 3, lwd = 2, col = magma(10)[1])
+
+# Normal distribution on parameters of y1
+    lines(y1_distr[, 1:2], lwd = 2, col = magma(10)[3])
+    
+# Lognormal distribution on parameters of y1
+    lines(y1_distr[, c(1, 3)], lwd = 2, lty = 2, col = magma(10)[5])
+    
+# Bounding box
+    box()
+    
+# Histogram of y2
+    hist(y2, breaks = 50, main = "", freq = FALSE, cex.lab = 1.3)
+    
+# Density lines of y2
+    lines(kde_2, lty = 3, lwd = 2, col = magma(10)[1])
+
+# Normal distribution on parameters of y2
+    lines(y2_distr[, 1:2], lwd = 2, col = magma(10)[3])
+    
+# Lognormal distribution on parameters of y2
+    lines(y2_distr[, c(1, 3)], lwd = 2, lty = 2, col = magma(10)[5])
+    
+# Bounding box
+    box()    
+    
+# Histogram of y3
+    hist(y3, breaks = 50, main = "", freq = FALSE, cex.lab = 1.3)
+    
+# Density lines of y3
+    lines(kde_3, lty = 3, lwd = 2, col = magma(10)[1])
+
+# Normal distribution on parameters of y3
+    lines(y3_distr[, 1:2], lwd = 2, col = magma(10)[3])
+    
+# Lognormal distribution on parameters of y3
+    lines(y3_distr[, c(1, 3)], lwd = 2, lty = 2, col = magma(10)[5])
+    
+# Bounding box
+    box()
+
+    
+# Adds a legend
+    legend("topright", legend = c("Observed", "Normal", "Log-Normal"),
+        title = "Distribution", lty = c(3, 1, 2), lwd = 2,
+        col = magma(10)[c(3, 1, 5)], bty = "n", cex = 1.3)
+    
+    
+
+```
+
+\
+
+As you can see from the figures above, variable *y3* has a very different distribution than either *y1* or *y2*! In each case, the red line shows an ideal normal distribution based on the mean and standard deviation of the values of each variable, while the black line shows the smoothed kernel density estimate. Variables *y1* and *y2* are approximately normally distributed, while variable *y3* is clearly not.
+
+Another way of looking at this is with the function qqPlot() from the R package "car". qqPlot shows a quantile-quantile plot, with confidence intervals. If a substantial number of points fall outside of the confidence intervals, then the assertion that the variable is normally distributed is suspect:
+
+``` {r, fig.width = 10, fig.height = 3.5, fig.align = "center", message = FALSE, results = "hide"}
+
+# Loads the car library
+    library(car)
+
+# Sets some framing parameters
+    par(mfrow = c(1, 3))
+    par(mar = c(4.5, 4.5, 1, 1))
+
+# Quantile-Quantile plots for each variable
+    qqPlot(y1)
+    qqPlot(y2)
+    qqPlot(y3)
+
+```
+    
+    
+### What can we do here?
+
+``` {r, echo = FALSE, message = FALSE}
+
+# Calculates some mean and median values
+    y1_mean <- round(mean(y1), 2)
+    y1_median <- round(median(y1), 2)
+
+    y3_mean <- round(mean(y3), 2)
+    y3_median <- round(median(y3), 2)
+
+```
+    
+A variable's distribution has a large impact on how we can interact with it via inferential statistics. For example, *T*-tests work best with normally distributed variables, as the test assumes that the mean is a good measure of central tendency for each group, and that the data are reasonbly symmetrical around the mean. This is the case for variable *y1*, with a mean of `r y1_mean` and a median of `r y1_median` - two very similar values! For variable *y3*, this isn't the case. *y3* has a mean of `r y3_mean` and a median of `r y3_median`, rather different from one another, indicating that the mean probably isn't a great measure of central tendency, and our inferences from a *z* or *t* statistic might not mean what we think they do. 
+
+
+``` {r, fig.width = 8, fig.height = 3.5, fig.align = "center", message = FALSE, results = "hide"}
+
+# Quick histogram with the mean and median values plotted of y1 and y3
+# Sets some framing parameters
+    par(mfrow = c(1, 2))
+    par(mar = c(4.5, 4.5, 1, 1))
+    
+# Histogram of y1
+    hist(y1, breaks = 50, main = "", freq = FALSE, cex.lab = 1.3)
+    
+# Mean and median lines
+    abline(v = y1_mean, lwd = 2)
+    abline(v = y1_median, lty = 3)
+    
+# Bounding box
+    box()
+    
+# Histogram of y3
+    hist(y3, breaks = 50, main = "", freq = FALSE, cex.lab = 1.3)
+    
+# Mean and median lines
+    abline(v = y3_mean, lwd = 2)
+    abline(v = y3_median, lty = 3)
+    
+# Bounding box
+    box()
+    
+# Legend
+    legend("topright", legend = c("Mean", "Median"), lty = c(1, 3), lwd = c(2,
+        1), bty = "n", cex = 1.2)
+    
+```
+
+
+The situation becomes even more clear when we are looking at two variables which are both not normally distributed and not linearly related to one another. Linearly related variables change with a constant, additive relationship - for every unit of X, Y should change a certain, consistent amount. These relationships often look linear. Nonlinear variables may have a relationship that looks like a curve. 
+    
+    
+    
+
+
+### Option 1: transform the variables
+
+One option in our toolkit is that we can apply a mathematical transformation to the variable(s). It is important to note that a transformation doesn't "fix" the variable; rather, it allows us to look at the variable in a different way or on a different scale. The simplest transformations are functions such as additions or divisions, and don't make much difference. Some more complicated mathematical functions *do* make a difference. A great example is the **log transformation**. Considering variable *y3* below:
+
+``` {r, fig.width = 8, fig.height = 4, fig.align = "center", message = FALSE, results = "hide"}
+
+# Framing parameters
+    par(mfrow = c(1, 2))
+    par(mar = c(4.5, 4.5, 3, 1))
+
+# Quantile-quantile plot of untransformed y3
+    qqPlot(y3)
+    
+# Label
+    mtext(expression(paste(italic("y3"), " Untransformed", sep = "")),
+        side = 3, line = 0, cex = 1.1)
+    
+# Quantile-quantile plot of untransformed y3
+    qqPlot(log10(y3))
+    
+# Label
+    mtext(expression(paste(italic("y3"), " ", log[10], " transformed", sep = "")),
+        side = 3, line = 0, cex = 1.1)
+
+
+```
+
+
+
+In this case the fix is imperfect, but it's a definite improvement. Inferential statistics asks us to lean into the grey nature of answers, and in this case, we would have to make a professional judgement of whether a log transformation was sufficient to allow us to use *y3* in analyses. There are many other transformations that might merit consideration here, but for many tests this might be good enough. 
+
+If we remember that *x1* and *y3* were generated to have a power distribution together, then the effects of log-transformation become more clear:
+
+``` {r, fig.width = 8, fig.height = 8, fig.align = "center", message = FALSE}
+
+
+# Sets framing parameters
+    par(mar = c(4.5, 4.5, 1, 1))
+    par(mfrow = c(2, 2))
+
+# Plots x1 v s y1
+    plot(x1, y1, pch = 21, bg = magma(10)[1], cex.lab = 1.3)
+
+# Plots x1 vs y2
+    plot(x1, y2, pch = 22, bg = magma(10)[5], cex.lab = 1.3)
+    
+# Plots x1 vs y3 untransformed
+    plot(x1, y3, pch = 23, bg = magma(10)[9], cex.lab = 1.3)
+    
+# Plots x1 vs y3 on a log scale
+    plot(x1, y3, log = "xy", pch = 23, bg = magma(10)[9],
+        cex.lab = 1.3, xlab = "x1 (log-scale)", ylab = "y3 (log-scale)")
+    
+    
+
+```
+
+
+In this case we transformed the axes of the plots rather than the values themselves, but if we applied a log-transformation to the values we would see a similar plot. If we just performed standard correlation or regression with the various *y* variables on *x1*, we could come to the conclusion that *y2* and *y3* have about the same relationship with *x1*! For example, the Pearson's correlation coefficient of *x1* and *y2* is `r round(cor(x1, y2), 2)` and for *x1* and *y3* is `r round(cor(x1, y3), 2)`. In our simple example here it's easy to see that the relationships are not similar. *y2* is approximately linearly related to *x1*, but has a lot of variability. *y3* has a **power relationship** with *x1*, but is tightly correlated. In more complex models with multiple variables and interaction effects, isolating the relationship shapes between any two variables becomes much more complicated, and we need to catch this on the front end of the analyses. 
+
+
+
+
+
+
