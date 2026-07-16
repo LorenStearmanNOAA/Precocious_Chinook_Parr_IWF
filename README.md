@@ -4,9 +4,9 @@
   
 <p align="center">Photograph of a wild precocious male Chinook salmon parr. Photo credit: L. Stearman.
 
-## Lead Author
-Loren Stearman
-Loren.Stearman@noaa.gov
+## Lead Authors
+Suji Jang
+Loren Stearman (corresponding author, Loren.Stearman@noaa.gov)
 
 ## Coauthors/Collaborators
 Jesse J Lamb
